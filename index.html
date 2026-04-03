@@ -517,7 +517,7 @@ let quarterlyReports=[];
 
 let now=new Date(),year=now.getFullYear(),month=now.getMonth()+1,day=now.getDate();
 const dayN=['일','월','화','수','목','금','토'];
-let quarter=Math.ceil(month/3);const qMonths=[3,6,9,12];let isQM=qMonths.includes(month);
+let quarter=Math.ceil(month/3);const qMonths=[3,6,9,12];let isQM=qMonths.includes(month)||(day<=7&&qMonths.includes(month===1?12:month-1));
 const pad2=n=>String(n).padStart(2,'0');
 let todayStr=`${year}-${pad2(month)}-${pad2(day)}`;
 const fmtDate=d=>`${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${dayN[d.getDay()]})`;
@@ -2750,7 +2750,7 @@ setInterval(()=>{
   const n=new Date(),newStr=`${n.getFullYear()}-${pad2(n.getMonth()+1)}-${pad2(n.getDate())}`;
   if(newStr===todayStr)return;
   now=n;year=n.getFullYear();month=n.getMonth()+1;day=n.getDate();
-  quarter=Math.ceil(month/3);isQM=qMonths.includes(month);
+  quarter=Math.ceil(month/3);isQM=qMonths.includes(month)||(day<=7&&qMonths.includes(month===1?12:month-1));
   todayStr=newStr;
   document.getElementById('current-date').textContent=`${year}년 ${month}월 ${day}일 (${dayN[n.getDay()]})`;
   document.getElementById('current-quarter').textContent=`제${quarter}분기`;
