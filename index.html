@@ -1323,7 +1323,7 @@ function runTaskSearch(query,onlyIncomplete,onlyHasDesc){
       return `<span class="w-2 h-2 rounded-full ${td.checked?TC[t].dot:'bg-slate-300'}" title="${TL[t]}${td.checked?' ✓ '+esc(td.name)+mTip:''}"></span>`;
     }).join('');
 
-    return `<div class="flex items-center gap-3 px-3 py-2 rounded-lg border border-slate-100 hover:border-fire-300 hover:bg-fire-50/30 cursor-pointer transition" onclick="goToTaskDate('${task.completedDate||dateKey}')">
+    return `<div class="flex items-center gap-3 px-3 py-2 rounded-lg border border-slate-100 hover:border-fire-300 hover:bg-fire-50/30 cursor-pointer transition" onclick="goToTaskDate('${dateKey}',${idx})">
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-1.5">
           <span class="text-[11px] text-slate-400 font-mono font-semibold flex-shrink-0">${dateLabel}</span>
@@ -1340,9 +1340,30 @@ function runTaskSearch(query,onlyIncomplete,onlyHasDesc){
   }).join('')+(results.length>MAX?`<p class="text-center text-[11px] text-slate-400 py-2">... 외 ${results.length-MAX}건 더 있음</p>`:'');
 }
 
-function goToTaskDate(dateKey){
+function goToTaskDate(dateKey,idx){
   closeModal();
-  dailyDate=new Date(dateKey+'T00:00:00');
+  let target=dateKey;
+  if(typeof idx==='number'){
+    const data=loadDaily();
+    const task=(data[dateKey]||[])[idx];
+    if(task){
+      const doneCount=TEAMS.filter(t=>task[t]&&task[t].checked).length;
+      if(doneCount===3){
+        const subs=TEAMS.map(t=>task[t]&&task[t].submitDate).filter(Boolean).sort();
+        if(subs.length){
+          const maxSub=subs[subs.length-1];
+          if(task.completedDate!==maxSub){
+            task.completedDate=maxSub;
+            saveDaily(data);
+          }
+          target=maxSub;
+        } else if(task.completedDate){
+          target=task.completedDate;
+        }
+      }
+    }
+  }
+  dailyDate=new Date(target+'T00:00:00');
   setDailyView('list');
   renderDailyList();
 }
