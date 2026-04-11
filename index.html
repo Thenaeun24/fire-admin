@@ -1323,7 +1323,7 @@ function runTaskSearch(query,onlyIncomplete,onlyHasDesc){
       return `<span class="w-2 h-2 rounded-full ${td.checked?TC[t].dot:'bg-slate-300'}" title="${TL[t]}${td.checked?' ✓ '+esc(td.name)+mTip:''}"></span>`;
     }).join('');
 
-    return `<div class="flex items-center gap-3 px-3 py-2 rounded-lg border border-slate-100 hover:border-fire-300 hover:bg-fire-50/30 cursor-pointer transition" onclick="goToTaskDate('${dateKey}')">
+    return `<div class="flex items-center gap-3 px-3 py-2 rounded-lg border border-slate-100 hover:border-fire-300 hover:bg-fire-50/30 cursor-pointer transition" onclick="goToTaskDate('${task.completedDate||dateKey}')">
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-1.5">
           <span class="text-[11px] text-slate-400 font-mono font-semibold flex-shrink-0">${dateLabel}</span>
@@ -1342,17 +1342,7 @@ function runTaskSearch(query,onlyIncomplete,onlyHasDesc){
 
 function goToTaskDate(dateKey){
   closeModal();
-  const data=loadDaily();
-  const tasks=data[dateKey]||[];
-  let targetDate=dateKey;
-  for(const t of tasks){
-    const doneCount=TEAMS.filter(tm=>t[tm]&&t[tm].checked).length;
-    if(doneCount===3&&t.completedDate&&t.completedDate!==dateKey){
-      targetDate=t.completedDate;
-      break;
-    }
-  }
-  dailyDate=new Date(targetDate+'T00:00:00');
+  dailyDate=new Date(dateKey+'T00:00:00');
   setDailyView('list');
   renderDailyList();
 }
