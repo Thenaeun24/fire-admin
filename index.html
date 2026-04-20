@@ -2761,15 +2761,16 @@ function deleteVendor(vid){
 // ▸▸▸ MEDICINE → DAILY TASK AUTO-SYNC ▸▸▸
 function syncMedToDaily(){
   const meds=loadMeds(),data=loadDaily();
-  const todayTasks=data[todayStr]||[];
   let changed=false;
 
   meds.forEach(m=>{
     if(!m.expiry)return;
     const exp=new Date(m.expiry+'T00:00:00'),tod=new Date(todayStr+'T00:00:00');
-    const diff=Math.ceil((exp-tod)/(1000*60*60*24));
+    const diff=Math.round((exp-tod)/86400000);
 
-    if(diff>=0&&diff<=1){
+    // 만료일이 오늘보다 미래면(diff>=1) 언제라도 D-1 과업을 미리 생성해 둔다.
+    // 앱을 D-1 당일에 열지 않아도 누락되지 않도록 선제 등록.
+    if(diff>=1){
       const prevDay=new Date(exp.getTime()-86400000);
       const prevKey=getDailyKey(prevDay);
       if(!data[prevKey])data[prevKey]=[];
@@ -2784,7 +2785,6 @@ function syncMedToDaily(){
     }
   });
 
-  data[todayStr]=todayTasks;
   if(changed){_cache[SK.d]=data;_pushToFirebase(SK.d,data);}
 }
 
