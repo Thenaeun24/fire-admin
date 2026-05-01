@@ -673,7 +673,7 @@ fbDataRef.on('value',snap=>{
     document.getElementById('loading-overlay').style.display='none';
     const savedMo=_cacheGet(SK.mo);
     if(savedMo&&parseInt(savedMo)!==month){
-      if(day>7){_cacheRemove(SK.m);_cacheRemove(SK.q);_cacheSet(SK.mo,month.toString())}
+      if(day>7){_cacheRemove(SK.q);_cacheSet(SK.mo,month.toString())}
     }else{_cacheSet(SK.mo,month.toString())}
     setupOfflineDetection();
     initAll();
